@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Photo Review - All 9 Enhanced Photos | Fatema's Birthday</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Playfair+Display:ital,wght@0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0d0f18;
+            --card-bg: rgba(26, 30, 48, 0.85);
+            --border: rgba(255, 107, 157, 0.25);
+            --accent: #ff6b9d;
+            --gold: #ffd166;
+            --text: #f0f2f8;
+            --text-muted: #a3adc4;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: linear-gradient(135deg, #0b0c16 0%, #16182c 50%, #0d0e1b 100%);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        header {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+        header h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.4rem;
+            color: var(--gold);
+            margin-bottom: 10px;
+        }
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            max-width: 750px;
+            margin: 0 auto 15px;
+        }
+        .recommendation-box {
+            background: rgba(255, 107, 157, 0.1);
+            border: 1px solid var(--accent);
+            border-radius: 18px;
+            padding: 22px 28px;
+            margin-bottom: 35px;
+            backdrop-filter: blur(8px);
+        }
+        .recommendation-box h2 {
+            font-size: 1.3rem;
+            color: #fff;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rec-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: 16px;
+            margin-top: 15px;
+        }
+        .rec-item {
+            background: rgba(0,0,0,0.3);
+            padding: 14px 18px;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent);
+        }
+        .rec-item strong { color: var(--gold); display: block; margin-bottom: 4px; }
+        .rec-item span { font-size: 0.9rem; color: var(--text-muted); }
+        .tag-rec {
+            background: linear-gradient(135deg, #ff6b9d, #ff8da1);
+            color: #fff;
+            font-size: 0.8rem;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .comparison-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 36px;
+        }
+        .photo-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 26px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+            backdrop-filter: blur(10px);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 18px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding-bottom: 12px;
+        }
+        .card-title {
+            font-size: 1.35rem;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .edit-summary {
+            font-size: 0.9rem;
+            color: #38ef7d;
+            background: rgba(56, 239, 125, 0.1);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(56, 239, 125, 0.25);
+        }
+        .side-by-side {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 22px;
+        }
+        @media (max-width: 768px) {
+            .side-by-side { grid-template-columns: 1fr; }
+        }
+        .image-box {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .image-label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .label-before { color: #f59e0b; }
+        .label-after { color: #10b981; }
+        .img-wrapper {
+            position: relative;
+            border-radius: 14px;
+            overflow: hidden;
+            background: #000;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.08);
+            aspect-ratio: 4 / 3;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .img-wrapper.portrait {
+            aspect-ratio: 3 / 4;
+        }
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        .img-wrapper:hover img {
+            transform: scale(1.02);
+        }
+        .photo-desc {
+            margin-top: 14px;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+        .action-bar {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px;
+            background: rgba(255, 107, 157, 0.08);
+            border-radius: 20px;
+            border: 1px dashed var(--accent);
+        }
+        .action-bar h3 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #fff;
+        }
+        .action-bar p {
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>✨ All 9 Enhanced Photos Review</h1>
+            <p>আপনার সবকটি (৯টি) ছবি প্রিমিয়াম রোমান্টিক ভাইবে নিখুঁতভাবে এডিট করা হয়েছে। নিচের সব ছবি <code>edited-pics/</code> ফোল্ডারে হাই কোয়ালিটিতে সংরক্ষিত আছে।</p>
+        </header>
+
+        <!-- RECOMMENDATION BOX -->
+        <div class="recommendation-box">
+            <h2>🎯 ওয়েবসাইটের জন্য আমার সেরা রিকমেন্ডেশন (মোট ৪টি ছবি দরকার)</h2>
+            <p style="color: var(--text-muted); font-size: 0.95rem;">ওয়েবসাইটে মূলত ৪টি ছবি লাগে (১টি গিফট বক্সের পোলারয়েড লেটার + ৩টি মেমোরি জার্নি গ্যালারি)। নিচে সেরা ৪টি সাজিয়ে দেওয়া হলো:</p>
+            <div class="rec-grid">
+                <div class="rec-item">
+                    <strong>🎁 গিফট বক্স পোলারয়েড (Love Letter):</strong>
+                    <span>ছবি নং ১ (কাপল ক্লোজ পোর্ট্রেট) — এটি সবচেয়ে স্পেশাল ও রোমান্টিক মূল কাপল ছবি!</span>
+                </div>
+                <div class="rec-item">
+                    <strong>📸 Chapter I (Where it began):</strong>
+                    <span>ছবি নং ২ (নদীর পাড়ে গোলাপ হাতে স্পর্শ) — সম্পর্কের গভীরতা ও মিষ্টি স্পর্শের দারুণ অনুভূতি!</span>
+                </div>
+                <div class="rec-item">
+                    <strong>🌸 Chapter II (Cherished Laughs):</strong>
+                    <span>ছবি নং ৩ (বাগানে বসে স্ত্রীর মায়াবী রূপ) — বার্থডে গার্লের একক স্নিগ্ধ রূপ যা ওনাকে অনেক স্পেশাল ফিল করাবে!</span>
+                </div>
+                <div class="rec-item">
+                    <strong>💖 Chapter III (Our Forever Journey):</strong>
+                    <span>ছবি নং ৫ (নীল আকাশ ও রোদের হাসি) — আনন্দময় ভবিষ্যৎ ও প্রাণবন্ত হাসিমুখের নিখুঁত স্মৃতি!</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-grid">
+            <!-- PHOTO 1 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>1. কাপল ক্লোজ পোর্ট্রেট</span>
+                        <span class="tag-rec">⭐ Recommended for Gift Box</span>
+                    </div>
+                    <div class="edit-summary">✨ ব্রাইট স্কিনটোন + সফট রোমান্টিক গ্লো</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.21.58.jpeg" alt="Original Photo 1"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper"><img src="edited-pics/1_couple_portrait_enhanced.jpg" alt="Enhanced Photo 1"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> আপনার স্কিন টোন ন্যাচারালভাবে উজ্জ্বল ও নরম স্টুডিও লাইটিংয়ে ক্ল্যাসিক লুক দেওয়া হয়েছে। স্ত্রীর স্নিগ্ধ রূপ অবিকল রাখা হয়েছে এবং ব্যাকগ্রাউন্ডে নরম বোকেহ তৈরি করা হয়েছে।</p>
+            </div>
+
+            <!-- PHOTO 2 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>2. নদীর পাড়ে গোলাপ হাতে স্পর্শ</span>
+                        <span class="tag-rec">⭐ Recommended for Gallery Ch-1</span>
+                    </div>
+                    <div class="edit-summary">🌿 ক্লিন ব্যাকগ্রাউন্ড + নদীর উজ্জ্বলতা</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper portrait"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.21.5.jpeg" alt="Original Photo 2"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper portrait"><img src="edited-pics/2_holding_roses_enhanced.jpg" alt="Enhanced Photo 2"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> ঘাসের উপরের ময়লা ও আবর্জনা সম্পূর্ণ মুছে পরিষ্কার সবুজ ঘাস আনা হয়েছে। আপনার হাতের রঙ উজ্জ্বল করা হয়েছে এবং গোলাপের পাপড়িগুলোকে জীবন্ত করা হয়েছে।</p>
+            </div>
+
+            <!-- PHOTO 3 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>3. বাগানে বসে স্ত্রীর মায়াবী রূপ</span>
+                        <span class="tag-rec">⭐ Recommended for Gallery Ch-2</span>
+                    </div>
+                    <div class="edit-summary">🌸 সিনেমাটিক লাইটিং + ফেস গ্লো</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper portrait"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.21.57.jpeg" alt="Original Photo 3"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper portrait"><img src="edited-pics/3_wife_garden_enhanced.jpg" alt="Enhanced Photo 3"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> ব্যাকলাইটের কারণে মুখে পড়া ছায়া দূর করে মিষ্টি নরম আলো দেওয়া হয়েছে। ওড়না, লম্বা চুল ও গোলাপের রঙ চমৎকার নান্দনিক আর্ট পোরট্রেটের মতো ফুটে উঠেছে।</p>
+            </div>
+
+            <!-- PHOTO 4 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>4. হাসিমুখের মিষ্টি কাপল সেলফি</span>
+                    </div>
+                    <div class="edit-summary">💖 ফেস শ্যাডো রিমুভ + গোল্ডেন আভা</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.22.00.jpeg2.jpeg" alt="Original Photo 4"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper"><img src="edited-pics/4_couple_sweet_smile_enhanced.jpg" alt="Enhanced Photo 4"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> গাছের পাতা থেকে পড়া ডার্ক শ্যাডো সরিয়ে আপনার স্কিন টোন সমান ও উজ্জ্বল করা হয়েছে। দুজনের মিষ্টি হাসির অভিব্যক্তি আরও উজ্জ্বল হয়েছে।</p>
+            </div>
+
+            <!-- PHOTO 5 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>5. নীল আকাশ ও রোদের হাসি</span>
+                        <span class="tag-rec">⭐ Recommended for Gallery Ch-3</span>
+                    </div>
+                    <div class="edit-summary">🌤️ তারের খুঁটি রিমুভ + পরিষ্কার নীল আকাশ</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.22.00.jpeg3.jpeg" alt="Original Photo 5"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper"><img src="edited-pics/5_couple_sunny_sky_enhanced.jpg" alt="Enhanced Photo 5"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> পেছনের বিশ্রী কারেন্টের খুঁটি ও তার সম্পূর্ণ মুছে পরিষ্কার নীল আকাশ ও সাদা মেঘ বসানো হয়েছে। কড়া রোদ নরম করে স্কিনটোন উজ্জ্বল করা হয়েছে।</p>
+            </div>
+
+            <!-- PHOTO 6 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>6. চোখ বন্ধ স্নিগ্ধ শান্ত মুহূর্ত</span>
+                    </div>
+                    <div class="edit-summary">✨ নরম কোমল ফিল্টার + ড্রিমী বোকেহ</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.21..jpeg" alt="Original Photo 6"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper"><img src="edited-pics/6_couple_peaceful_eyes_closed.jpg" alt="Enhanced Photo 6"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> স্ত্রীর চোখ বন্ধ স্নিগ্ধ মুহূর্ত ও আপনার হাসিমুখ। পেছনের তীব্র লাইটকে নরম করে রোমান্টিক ড্রিমী আভা দেওয়া হয়েছে এবং স্কিন টোন ব্রাইট করা হয়েছে।</p>
+            </div>
+
+            <!-- PHOTO 7 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>7. আয়নায় মিষ্টি মিরর সেলফি (গোলাপ ফুল দিয়ে লুকানো মুখ)</span>
+                    </div>
+                    <div class="edit-summary">🌹 লাল গোলাপের পপ + ক্লিন ব্যাকগ্রাউন্ড</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper portrait"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.21.59.jpeg1.jpeg" alt="Original Photo 7"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper portrait"><img src="edited-pics/7_couple_mirror_rose.jpg" alt="Enhanced Photo 7"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> ইনডোর ইয়েলোইশ লাইটিং দূর করে ক্লিন মডার্ন পোর্ট্রেট লাইট দেওয়া হয়েছে। আপনার ফেস ও শার্ট পরিষ্কার উজ্জ্বল করা হয়েছে এবং লাল গোলাপটি দারুণভাবে ফুটে উঠেছে।</p>
+            </div>
+
+            <!-- PHOTO 8 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>8. বাগানের বেঞ্চে স্ত্রীর ফুল ফ্রেম পোরট্রেট</span>
+                    </div>
+                    <div class="edit-summary">🌿 গ্রিনারি ব্লেন্ড + সফ্ট পোরট্রেট লাইট</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper portrait"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.218.jpeg" alt="Original Photo 8"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper portrait"><img src="edited-pics/8_wife_bench_full_portrait.jpg" alt="Enhanced Photo 8"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> বেঞ্চে বসে থাকা পুরো দৃশ্যটি কড়া রোদের ফ্ল্যাট লুক থেকে সফট পোরট্রেট আর্টে রূপান্তর করা হয়েছে। হাতের ফুল ও ওড়নার বিবরণ অনেক স্পষ্ট হয়েছে।</p>
+            </div>
+
+            <!-- PHOTO 9 -->
+            <div class="photo-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span>9. রোদের আলোয় মিষ্টি সেলফি (কপালে হাত দিয়ে)</span>
+                    </div>
+                    <div class="edit-summary">☀️ মিষ্টি রোদ ব্যালেন্স + হাসিমুখ</div>
+                </div>
+                <div class="side-by-side">
+                    <div class="image-box">
+                        <span class="image-label label-before">◀ Original Photo</span>
+                        <div class="img-wrapper"><img src="wife-pic/WhatsApp Image 2026-11-02 at 16.22.01.jpeg5.jpeg" alt="Original Photo 9"></div>
+                    </div>
+                    <div class="image-box">
+                        <span class="image-label label-after">▶ Enhanced Photo (Edited)</span>
+                        <div class="img-wrapper"><img src="edited-pics/9_couple_sunny_close_smile.jpg" alt="Enhanced Photo 9"></div>
+                    </div>
+                </div>
+                <p class="photo-desc"><strong>এডিট বিবরণ:</strong> কপালে হাত দিয়ে তাকানোর কিউট অভিব্যক্তি। আকাশ ও রোদের তীব্রতা কমিয়ে দুজনের হাসিমুখ স্পষ্ট ও উজ্জ্বল করা হয়েছে।</p>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <h3>ছবিগুলো গ্যালারির জন্য সেভ করা আছে!</h3>
+            <p>সবকটি এডিট করা ছবি <strong>c:\Project Folder\Bday-site\edited-pics</strong> ফোল্ডারে হাই কোয়ালিটিতে রাখা আছে।<br>আপনি কি আমার রেকমেন্ড করা ৪টি ছবি মূল ওয়েবসাইটে বসাতে চান, নাকি অন্য কোনো ছবি বসাতে চান?</p>
+        </div>
+    </div>
+</body>
+</html>

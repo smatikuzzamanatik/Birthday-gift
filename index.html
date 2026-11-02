@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Happy Birthday, My Love! ✨</title>
+    <title>Happy Birthday, Fatema! ✨ | My Dearest Wifey</title>
     <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -14,6 +14,23 @@
     <!-- Canvas for Confetti and Background Particles -->
     <canvas id="particleCanvas"></canvas>
 
+    <!-- Floating Story Progress Indicator (Step-by-step Journey) -->
+    <nav class="story-progress-bar hidden" id="storyProgressBar" aria-label="Story Progress">
+        <div class="progress-step" data-step="1" title="The Love Note Envelope"><span class="step-icon">💌</span><span class="step-label">Start</span></div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="2" title="Grand Greeting"><span class="step-icon">💖</span><span class="step-label">Wish</span></div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="3" title="Birthday Cake"><span class="step-icon">🎂</span><span class="step-label">Cake</span></div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="4" title="Love Letter & Gift"><span class="step-icon">🎁</span><span class="step-label">Letter</span></div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="5" title="Love Balloons"><span class="step-icon">🎈</span><span class="step-label">Balloons</span></div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="6" title="Our Memory Journey"><span class="step-icon">📸</span><span class="step-label">Memories</span></div>
+        <div class="progress-line"></div>
+        <div class="progress-step" data-step="7" title="Grand Finale Celebration"><span class="step-icon">👑</span><span class="step-label">Finale</span></div>
+    </nav>
+
     <!-- Floating Audio Control -->
     <button class="music-control" id="musicToggle" aria-label="Toggle Music" title="Mute/Unmute Music">
         <svg class="music-icon playing" viewBox="0 0 24 24" width="24" height="24">
@@ -23,6 +40,12 @@
             <path fill="currentColor" d="M4.27 3L3 4.27l9 9v.28c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4v-1.73l6 6L21 20.73 4.27 3zM14 7h4V3h-6v5.18l2 2z"/>
         </svg>
     </button>
+
+    <!-- Background Song Audio Element (Aarzu by Asim Azhar) -->
+    <audio id="bgMusic" loop preload="auto">
+        <source src="song.mp3" type="audio/mpeg">
+        <source src="song/Aarzu.mp3" type="audio/mpeg">
+    </audio>
 
     <!-- PAGE 1: Welcome Overlay (Envelope / Card Gate) -->
     <section class="celebration-page active" id="page1">
@@ -36,17 +59,54 @@
                     <div class="envelope-paper">
                         <div class="paper-content">
                             <span class="heart">❤️</span>
-                            <h3>A Secret Love Note</h3>
-                            <p>Written with all my love...</p>
+                            <h3>For My Wifey, Fatema</h3>
+                            <p>Written with all my heart...</p>
                         </div>
                     </div>
                 </div>
             </div>
-            <h1 class="welcome-title">Happy Birthday, My Love 💖</h1>
-            <p class="welcome-subtitle">A magical romantic story created just for you. Tap below to unfold your surprise.</p>
+            <h1 class="welcome-title">Happy Birthday, Fatema 💖</h1>
+            <p class="welcome-subtitle">A magical romantic journey created just for the most special person in my life — My Dearest Wifey. Tap below to unfold your surprise.</p>
             <button class="btn btn-primary" id="enterBtn">
                 <span>Unfold The Magic ✨</span>
             </button>
+        </div>
+
+        <!-- CUTE COUPLE QUIZ GATE MODAL (Must pass to enter!) -->
+        <div class="quiz-modal-overlay hidden" id="quizModal">
+            <div class="quiz-card glass-panel" id="quizCard">
+                <div class="quiz-badge">🔒 Atik's Love Security Checkpoint 💕</div>
+                <h2 class="quiz-main-title">Wait, My Wifey! 🌸</h2>
+                <p class="quiz-subtitle">Prove you are Atik's one & only! Answer all 8 questions correctly to unlock your birthday world.</p>
+                
+                <!-- Quiz Progress Bar -->
+                <div class="quiz-progress-track">
+                    <div class="quiz-progress-fill" id="quizProgressFill" style="width: 12.5%;"></div>
+                </div>
+                <div class="quiz-step-text" id="quizStepText">Question 1 of 8</div>
+
+                <!-- Active Question Container -->
+                <div class="quiz-question-container">
+                    <div class="quiz-question-icon" id="quizQIcon">💌</div>
+                    <h3 class="quiz-question-text" id="quizQText">What's your name? (The one Atik likes most)</h3>
+                    
+                    <form id="quizForm" class="quiz-form" onsubmit="return false;">
+                        <div class="quiz-input-wrapper">
+                            <input type="text" id="quizInput" class="quiz-input" placeholder="Type your answer here..." autocomplete="off">
+                        </div>
+                        <button type="submit" class="btn btn-primary quiz-submit-btn" id="quizSubmitBtn">
+                            <span>Submit Answer 💕</span>
+                        </button>
+                    </form>
+
+                    <!-- Feedback message (Sweet / Teasing) -->
+                    <div class="quiz-feedback hidden" id="quizFeedback"></div>
+                    
+                    <!-- Cute hint button -->
+                    <button class="quiz-hint-btn" id="quizHintBtn" type="button">💡 Need a cute hint?</button>
+                    <div class="quiz-hint-text hidden" id="quizHintText"></div>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -59,8 +119,8 @@
         <section class="celebration-page hidden" id="page2">
             <div class="hero-section">
                 <div class="birthday-tag animate-fade-in">Happy Birthday to My Entire World</div>
-                <h1 class="birthday-name animate-pop-in" id="birthdayName">My Dearest Love 💖</h1>
-                <p class="birthday-wish animate-fade-in">“In a world full of billions of people, my eyes will always search for you. May your special day be wrapped in warm hugs, sweet smiles, and every dream your heart holds dear.”</p>
+                <h1 class="birthday-name animate-pop-in" id="birthdayName">My Dearest Wifey, Fatema 💖</h1>
+                <p class="birthday-wish animate-fade-in">“In a world of billions, my heart will always choose you. You are my greatest blessing, my safest home, and my favorite reason to smile. May your special day bring you as much pure happiness as you bring into my life every single day.”</p>
                 <div class="navigation-controls">
                     <button class="btn btn-primary navigation-btn" id="goToCakeBtn">
                         <span>Make a Secret Wish 🎂</span>
@@ -140,16 +200,19 @@
                 <div class="full-card-layout">
                     <div class="card-photo-frame">
                         <div class="polaroid-photo" id="polaroidPhoto">
-                            <img src="gift_photo.png" alt="Memory Photo" style="width:100%; height:100%; object-fit:cover;">
+                            <img src="gift_photo.png" alt="Memory Photo" style="width:100%; height:100%; object-fit:cover; object-position: center;">
                         </div>
+                        <div class="polaroid-handwritten-caption">Forever With You, Fatema ❤️</div>
                     </div>
                     <div class="card-text-side">
-                        <h3 class="card-heading">My Heart's Deepest Wish For You ❤️</h3>
+                        <h3 class="card-heading">To My Dearest Wifey, Fatema ❤️</h3>
                         <div class="card-message-content">
-                            <p>From the moment you walked into my life, you turned ordinary days into pure magic. Your smile is my favorite view, and your happiness is my life's highest purpose.</p>
-                            <p>On your special day, I wish you a lifetime overflowing with peace, radiant health, endless laughter, and all the unconditional love in the universe. Happy Birthday, my soulmate!</p>
+                            <p>Happy Birthday, my love! Words will never truly be enough to express just how deeply special you are to me. You are not only my wife, but my best friend, my peaceful sanctuary, and the most precious person in my entire universe.</p>
+                            <p>Through every smile and every tear, in every happiness and every hardship, you have always stood firmly by my side. You celebrate my joys and hold my hand through every struggle. Having you as my life partner is the greatest blessing of my life.</p>
+                            <p>I honestly cannot imagine even a single day of my life without you, Fatema. I love you so much more than words could ever describe — more than yesterday, and even more tomorrow. Thank you for making our world so beautiful, warm, and full of love.</p>
+                            <p>May your special day be wrapped in endless laughter, pure peace, and every sweet blessing your heart desires. Happy Birthday, my queen!</p>
                         </div>
-                        <div class="signature">Forever & Eternally Yours, <br><strong>With All My Love 💕</strong></div>
+                        <div class="signature">Forever & Eternally Yours, <br><strong>Your Loving Husband 💕</strong></div>
                         <div style="margin-top: 20px; text-align: center;">
                             <button class="btn btn-primary navigation-btn" id="goToBalloonsBtn">
                                <span>Pop Love Balloons 🎈</span>
@@ -201,10 +264,10 @@
                             <div class="slide-card-inner">
                                 <div class="slide-card-front">
                                     <div class="slide-photo">
-                                        <img src="pic1.jpg" alt="Where it all began" style="width:100%; height:100%; object-fit:cover;">
+                                        <img src="pic1.jpg" alt="Holding hands by the river" style="width:100%; height:100%; object-fit:cover;">
                                     </div>
                                     <div class="slide-caption">
-                                        “Where our story first began to blossom...”
+                                        “Where our journey began — hands held tight by the river...”
                                         <span class="flip-hint">Tap photo to see secret note 🔄</span>
                                     </div>
                                 </div>
@@ -214,7 +277,7 @@
                                         <span class="stamp-icon">💌</span>
                                     </div>
                                     <div class="back-note-content">
-                                        <p>“Every great love story starts with a single smile. Looking back at where we started, I know every second with you was written in the stars.”</p>
+                                        <p>“Every great story starts with a gentle touch. Holding your hand through every season of life is my sacred promise, Fatema. With you, every step is peaceful.”</p>
                                     </div>
                                     <div class="back-note-footer">
                                         <span class="handwritten-sign">Forever & Always ❤️</span>
@@ -229,10 +292,10 @@
                             <div class="slide-card-inner">
                                 <div class="slide-card-front">
                                     <div class="slide-photo">
-                                        <img src="pic2.jpg" alt="Cherished Laughs" style="width:100%; height:100%; object-fit:cover;">
+                                        <img src="pic2.jpg" alt="Your Grace and Beauty" style="width:100%; height:100%; object-fit:cover;">
                                     </div>
                                     <div class="slide-caption">
-                                        “Moments of pure joy, endless laughter, and warmth...”
+                                        “Your gentle grace, endless beauty, and radiant soul...”
                                         <span class="flip-hint">Tap photo to see secret note 🔄</span>
                                     </div>
                                 </div>
@@ -242,7 +305,7 @@
                                         <span class="stamp-icon">💖</span>
                                     </div>
                                     <div class="back-note-content">
-                                        <p>“Your laughter is my absolute favorite sound in the whole world. Thank you for filling every single day with warmth, hugs, and sweet memories.”</p>
+                                        <p>“You bring so much light and serenity into my life. Watching your gentle presence and sweet demeanor is my heart's purest joy. Happy Birthday, my beautiful wifey!”</p>
                                     </div>
                                     <div class="back-note-footer">
                                         <span class="handwritten-sign">With All My Heart ✨</span>
@@ -257,10 +320,10 @@
                             <div class="slide-card-inner">
                                 <div class="slide-card-front">
                                     <div class="slide-photo">
-                                        <img src="pic3.jpg" alt="Milestones Reached" style="width:100%; height:100%; object-fit:cover;">
+                                        <img src="pic3.jpg" alt="Pure Joy and Laughter" style="width:100%; height:100%; object-fit:cover;">
                                     </div>
                                     <div class="slide-caption">
-                                        “Looking forward to a lifetime of love and dreams...”
+                                        “Pure joy, endless laughter, and my favorite smile...”
                                         <span class="flip-hint">Tap photo to see secret note 🔄</span>
                                     </div>
                                 </div>
@@ -270,7 +333,7 @@
                                         <span class="stamp-icon">🎂</span>
                                     </div>
                                     <div class="back-note-content">
-                                        <p>“Here's to everything we've built together and every beautiful dream waiting for us in the future. Happy Birthday, my forever and always!”</p>
+                                        <p>“Your smile is my favorite view in the whole universe. Through every happiness and every sorrow, I promise to always stand right beside you. Happy Birthday, my love!”</p>
                                     </div>
                                     <div class="back-note-footer">
                                         <span class="handwritten-sign">Love You Infinite 💕</span>
@@ -293,17 +356,58 @@
                     </div>
                 </div>
 
-                <!-- Restart Celebration -->
-                <div class="navigation-controls" style="margin-top: 50px;">
-                    <button class="btn btn-secondary navigation-btn" id="restartBtn">
-                        <span>Replay Our Journey ❤️</span>
+                <!-- Navigation to Grand Finale -->
+                <div class="navigation-controls" style="margin-top: 40px;">
+                    <button class="btn btn-primary navigation-btn" id="goToFinaleBtn">
+                        <span>Grand Birthday Finale 👑🎆</span>
                     </button>
                 </div>
             </div>
             
             <footer class="birthday-footer">
-                <p>Happy Birthday, My Love! 💖</p>
-                <div class="sparkle-text">“You are, and always will be, my favorite story...”</div>
+                <p>Happy Birthday, My Dearest Wifey Fatema! 💖</p>
+                <div class="sparkle-text">“You are, and always will be, my favorite love story...”</div>
+            </footer>
+        </section>
+
+        <!-- PAGE 7: The Grand Finale (The Definitive Ending & Celebration) -->
+        <section class="celebration-page hidden" id="page7">
+            <div class="glass-panel interactive-card finale-card">
+                <div class="finale-crown">👑</div>
+                <div class="birthday-tag animate-fade-in">The Journey Of A Lifetime</div>
+                <h1 class="finale-title animate-pop-in">Happy Birthday, My Queen Fatema! 💖✨</h1>
+                <p class="finale-desc animate-fade-in">
+                    “In you, I found my greatest blessing, my safest shelter, and my heart's eternal home. Thank you for walking through every season of life by my side — through every joy and every sorrow.”
+                </p>
+
+                <div class="finale-promise-box">
+                    <div class="promise-item">
+                        <span class="promise-icon">💫</span>
+                        <p>“I promise to cherish your smile every single day.”</p>
+                    </div>
+                    <div class="promise-item">
+                        <span class="promise-icon">🤝</span>
+                        <p>“I promise to stand by you in all joys and struggles.”</p>
+                    </div>
+                    <div class="promise-item">
+                        <span class="promise-icon">💕</span>
+                        <p>“I promise to love you more with every tomorrow.”</p>
+                    </div>
+                </div>
+
+                <div class="finale-action-buttons">
+                    <button class="btn btn-secondary navigation-btn" id="finaleReadLetterBtn">
+                        <span>💌 Read Love Letter Again</span>
+                    </button>
+                    <button class="btn btn-primary navigation-btn" id="restartBtn">
+                        <span>🔄 Replay Story From Start</span>
+                    </button>
+                </div>
+            </div>
+
+            <footer class="birthday-footer">
+                <p>Forever & Always Yours, Your Loving Husband 💕</p>
+                <div class="sparkle-text">“Happy Birthday to the most special person in my universe!”</div>
             </footer>
         </section>
     </main>

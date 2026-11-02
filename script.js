@@ -14,18 +14,18 @@ const appState = {
     balloonIntervals: [], // Track running balloon timeout processes
     activeSlide: 0,
     ambientNodes: [], // Track running ambient synthesizers to mute/unmute
-    currentPageIndex: 1
+    currentPageIndex: 1,
+    quizPassed: false
 };
 
 // Romantic Love & Birthday Wishes Database
 const birthdayWishes = [
-    { sender: "Your Secret Admirer 💖", text: "You fill every single day with warmth, sunshine, and happiness. Happy Birthday my love!", avatar: "💖" },
-    { sender: "Soulmate 👩‍❤️‍👨", text: "Wishing you a lifetime of endless laughter, magical adventures, and unconditional love. You deserve the world!", avatar: "🥰" },
-    { sender: "Best Companion 💕", text: "Thank you for being my constant light and favorite person. May all your secret wishes come true today!", avatar: "💕" },
-    { sender: "Forever Friend 🌸", text: "Here's to celebrating the most beautiful soul on their special day. Keep shining as bright as ever!", avatar: "🌸" },
-    { sender: "Love Wisher 💘", text: "Every memory created with you is a treasure. Wishing you the happiest and sweetest birthday ever!", avatar: "💘" },
-    { sender: "Heartmate 💓", text: "May your day be filled with warm hugs, sweet surprises, and endless smiles. Happy Birthday!", avatar: "💓" },
-    { sender: "Special Someone 💌", text: "Sending you all my love and big warm hugs on your birthday! Always stay smiling!", avatar: "💌" }
+    { sender: "Your Loving Husband 💕", text: "Happy Birthday, Fatema! You are the most special person in my life and my greatest blessing.", avatar: "💖" },
+    { sender: "Forever Yours 👩‍❤️‍👨", text: "I honestly cannot imagine even a single day of my life without you. I love you so much!", avatar: "🥰" },
+    { sender: "My Safe Haven 🌸", text: "Thank you for always standing by my side through every joy and every sorrow. You are my true strength.", avatar: "🌸" },
+    { sender: "My Dearest Wifey 💓", text: "Your smile is my favorite view in the whole world. Keep smiling always, my queen!", avatar: "💓" },
+    { sender: "With All My Heart 💘", text: "To the most beautiful soul who makes our home so warm and peaceful — Happy Birthday, Fatema!", avatar: "💘" },
+    { sender: "Your Partner in Everything 💌", text: "Wishing you a lifetime of good health, endless smiles, and all the love in the universe!", avatar: "💌" }
 ];
 
 // -------------------------------------------------------------
@@ -538,8 +538,31 @@ function animateParticles() {
 // Slide Navigation Engine
 // -------------------------------------------------------------
 
+function updateProgressBar(pageIndex) {
+    const bar = document.getElementById('storyProgressBar');
+    if (!bar) return;
+    if (pageIndex === 1) {
+        bar.classList.add('hidden');
+    } else {
+        bar.classList.remove('hidden');
+    }
+    const steps = bar.querySelectorAll('.progress-step');
+    steps.forEach(step => {
+        const stepNum = parseInt(step.getAttribute('data-step'));
+        if (stepNum < pageIndex) {
+            step.classList.add('completed');
+            step.classList.remove('active');
+        } else if (stepNum === pageIndex) {
+            step.classList.add('active');
+            step.classList.remove('completed');
+        } else {
+            step.classList.remove('active', 'completed');
+        }
+    });
+}
+
 function navigateToPage(pageIndex) {
-    const pageIds = ['page1', 'page2', 'page3', 'page4', 'page5', 'page6'];
+    const pageIds = ['page1', 'page2', 'page3', 'page4', 'page5', 'page6', 'page7'];
     if (pageIndex < 1 || pageIndex > pageIds.length) return;
 
     // Find the current active page
@@ -556,18 +579,22 @@ function navigateToPage(pageIndex) {
             
             // Enter new page
             const targetPage = document.getElementById(pageIds[pageIndex - 1]);
-            targetPage.classList.remove('hidden');
-            
-            setTimeout(() => {
-                targetPage.classList.add('active');
-            }, 50);
+            if (targetPage) {
+                targetPage.classList.remove('hidden');
+                setTimeout(() => {
+                    targetPage.classList.add('active');
+                }, 50);
+            }
         }, 800); // sync with style.css transition speed
     } else {
         const targetPage = document.getElementById(pageIds[pageIndex - 1]);
-        targetPage.classList.remove('hidden');
-        targetPage.classList.add('active');
+        if (targetPage) {
+            targetPage.classList.remove('hidden');
+            targetPage.classList.add('active');
+        }
     }
     appState.currentPageIndex = pageIndex;
+    updateProgressBar(pageIndex);
 
     // Special page actions
     if (pageIndex === 2) {
@@ -579,6 +606,15 @@ function navigateToPage(pageIndex) {
         appState.balloonsActive = false;
         appState.balloonIntervals.forEach(clearInterval);
         appState.balloonIntervals = [];
+    }
+    if (pageIndex === 7) {
+        // Grand finale celebration trigger
+        playMagicChime();
+        spawnConfetti(window.innerWidth / 2, window.innerHeight / 3, 200);
+        setTimeout(() => {
+            spawnConfetti(window.innerWidth / 4, window.innerHeight / 2, 120);
+            spawnConfetti((window.innerWidth * 3) / 4, window.innerHeight / 2, 120);
+        }, 800);
     }
 }
 
@@ -596,9 +632,222 @@ if (nameParam) {
     document.title = `Happy Birthday, ${cleanName}! ✨`;
 }
 
-// 1. Entrance Transition (Page 1 -> Page 2)
+// 1. Entrance Transition & Cute Couple Quiz Gate
 const enterBtn = document.getElementById('enterBtn');
 const mainContent = document.getElementById('mainContent');
+
+// Quiz DOM Elements
+const quizModal = document.getElementById('quizModal');
+const quizCard = document.getElementById('quizCard');
+const quizProgressFill = document.getElementById('quizProgressFill');
+const quizStepText = document.getElementById('quizStepText');
+const quizQIcon = document.getElementById('quizQIcon');
+const quizQText = document.getElementById('quizQText');
+const quizInput = document.getElementById('quizInput');
+const quizForm = document.getElementById('quizForm');
+const quizFeedback = document.getElementById('quizFeedback');
+const quizHintBtn = document.getElementById('quizHintBtn');
+const quizHintText = document.getElementById('quizHintText');
+
+let quizCurrentIndex = 0;
+
+const quizQuestions = [
+    {
+        num: 1,
+        icon: "💌",
+        question: "What's your name? (The one Atik likes most)",
+        hint: "Think of the sweet nicknames Atik always calls you with love! 😉",
+        wrongMsg: "Oops! Atik is making a cute pouting face 🥺 Think of what he lovingly calls you!",
+        correctMsg: "Yay! That's my sweetest baby! 🥰❤️",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('baby') || clean.includes('wifey') || clean.includes('babu') || clean.includes('fatema');
+        }
+    },
+    {
+        num: 2,
+        icon: "🏫",
+        question: "Where did we first meet?",
+        hint: "Remember our student days? Where did we both used to go? 🎒",
+        wrongMsg: "Aww, did you forget our special meeting place? 😜 Think back to our student life!",
+        correctMsg: "Spot on! Our college, where our story started! 💖",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('college');
+        }
+    },
+    {
+        num: 3,
+        icon: "⚖️",
+        question: "Who loves whom more?",
+        hint: "Think carefully... do we love the same, or who loves more? 🥰",
+        wrongMsg: "Nope! Don't you dare say you love more! 😜 Atik loves you infinity or equally!",
+        correctMsg: "Aww, so true! Either equal or Atik loves you endlessly! 💕",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('both') || clean.includes('equal') || clean.includes('atik') || clean.includes('me more');
+        }
+    },
+    {
+        num: 4,
+        icon: "😜",
+        question: "What does Atik love doing with you the most?",
+        hint: "Think about what Atik does all the time to playfully trouble you! 🤭",
+        wrongMsg: "Haha nope! Think about what he does 24/7 to make you smile or annoyed! 😝",
+        correctMsg: "Spot on! Teasing you is Atik's favorite thing in the universe! 😆❤️",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('teas') || clean.includes('disturb') || clean.includes('jalat') || clean.includes('bother') || clean.includes('ragano');
+        }
+    },
+    {
+        num: 5,
+        icon: "💋",
+        question: "Which part of your body does Atik like the most?",
+        hint: "The sweetest part you smile and talk with! 💄",
+        wrongMsg: "Wrong guess! Think about where Atik always looks and loves to kiss! 😉💋",
+        correctMsg: "Mmhmm, exactly! Your beautiful, sweet lips! 💋🔥",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('lip') || clean.includes('thot');
+        }
+    },
+    {
+        num: 6,
+        icon: "💖",
+        question: "How much do you love Atik?",
+        hint: "Express how much you love your hubby from the bottom of your heart! ❤️",
+        wrongMsg: "Hey! That sounds too little! Express your love with all your heart! 🥺❤️",
+        correctMsg: "Awww, my heart melted! I love you even more, Fatema! 🥹💕",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            if (clean.includes('little') || clean.includes('kom') || clean.length < 2) return false;
+            return clean.includes('much') || clean.includes('lot') || clean.includes('infinity') || clean.includes('infinite') || clean.includes('everything') || clean.includes('world') || clean.includes('universe') || clean.includes('onek') || clean.includes('shob') || clean.includes('more') || clean.includes('love') || clean.length >= 3;
+        }
+    },
+    {
+        num: 7,
+        icon: "🌸",
+        question: "If Atik wants to kiss your cheeks, would you let him?",
+        hint: "What would a loving wifey say to her husband? 😉",
+        wrongMsg: "Excuse me?! You have to say yes of course! Try again, madam! 😤❤️",
+        correctMsg: "Yay! Cheek kisses reserved exclusively for hubby! 😘✨",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('yes') || clean.includes('course') || clean.includes('sure') || clean.includes('ha') || clean.includes('obossoi') || clean.includes('alway');
+        }
+    },
+    {
+        num: 8,
+        icon: "🔥",
+        question: "What if he wants to kiss your lips?",
+        hint: "Don't be shy! What's your answer for your hubby? 🙈💋",
+        wrongMsg: "Aww, are you blushing? Say yes! 🙈💋",
+        correctMsg: "Access Granted! Welcome to your magical birthday world, My Queen! 👑💖🎉",
+        validate: (str) => {
+            const clean = str.toLowerCase().trim();
+            return clean.includes('yes') || clean.includes('sure') || clean.includes('course') || clean.includes('ha') || clean.includes('obossoi') || clean.includes('definitely');
+        }
+    }
+];
+
+function renderCurrentQuizQuestion() {
+    const q = quizQuestions[quizCurrentIndex];
+    if (!q) return;
+
+    quizQIcon.textContent = q.icon;
+    quizQText.textContent = q.question;
+    quizInput.value = '';
+    quizInput.placeholder = "Type your answer here...";
+    quizStepText.textContent = `Question ${q.num} of ${quizQuestions.length}`;
+    quizProgressFill.style.width = `${((q.num) / quizQuestions.length) * 100}%`;
+    
+    quizFeedback.className = 'quiz-feedback hidden';
+    quizFeedback.textContent = '';
+    quizHintText.className = 'quiz-hint-text hidden';
+    quizHintText.textContent = '';
+    
+    quizInput.disabled = false;
+    setTimeout(() => quizInput.focus(), 150);
+}
+
+function handleQuizSubmit() {
+    const userAns = quizInput.value.trim();
+    if (!userAns) {
+        showQuizWrong("Please type your sweet answer first! 💕");
+        return;
+    }
+
+    const q = quizQuestions[quizCurrentIndex];
+    if (q.validate(userAns)) {
+        // Correct answer!
+        playMagicChime();
+        const rect = quizCard.getBoundingClientRect();
+        spawnConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2, 45);
+
+        quizFeedback.className = 'quiz-feedback correct';
+        quizFeedback.textContent = q.correctMsg;
+        quizInput.disabled = true;
+
+        if (quizCurrentIndex < quizQuestions.length - 1) {
+            quizCurrentIndex++;
+            setTimeout(() => {
+                renderCurrentQuizQuestion();
+            }, 900);
+        } else {
+            // All 8 questions completed!
+            appState.quizPassed = true;
+            setTimeout(() => {
+                quizModal.classList.add('hidden');
+                enterCelebration();
+            }, 1300);
+        }
+    } else {
+        // Wrong answer!
+        showQuizWrong(q.wrongMsg);
+    }
+}
+
+function showQuizWrong(msg) {
+    playPopSound();
+    quizCard.classList.remove('shake');
+    void quizCard.offsetWidth; // trigger reflow
+    quizCard.classList.add('shake');
+    
+    quizFeedback.className = 'quiz-feedback wrong';
+    quizFeedback.textContent = msg;
+    quizInput.focus();
+}
+
+if (quizHintBtn) {
+    quizHintBtn.addEventListener('click', () => {
+        const q = quizQuestions[quizCurrentIndex];
+        if (q && q.hint) {
+            quizHintText.textContent = q.hint;
+            quizHintText.classList.remove('hidden');
+        }
+    });
+}
+
+if (quizForm) {
+    quizForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        handleQuizSubmit();
+    });
+}
+
+function openQuizGate() {
+    getAudioContext();
+    playMagicChime();
+    if (appState.quizPassed) {
+        enterCelebration();
+        return;
+    }
+    quizCurrentIndex = 0;
+    renderCurrentQuizQuestion();
+    quizModal.classList.remove('hidden');
+    playBackgroundMusic();
+}
 
 function enterCelebration() {
     getAudioContext();
@@ -610,12 +859,13 @@ function enterCelebration() {
     // Switch page
     navigateToPage(2);
     
-    // Start background audio loops
+    // Start background music / audio loops
     setTimeout(() => {
-        startAmbientSoundscape();
-    }, 600);
+        playBackgroundMusic();
+    }, 400);
 }
-enterBtn.addEventListener('click', enterCelebration);
+
+enterBtn.addEventListener('click', openQuizGate);
 
 // 2. Go to Cake Page (Page 2 -> Page 3)
 const goToCakeBtn = document.getElementById('goToCakeBtn');
@@ -653,7 +903,7 @@ function blowCandle(e) {
         spawnConfetti(centerX, centerY, 150);
         
         if (wishInstructions) {
-            wishInstructions.innerHTML = `<span class="animate-fade-in" style="color: var(--color-gold); font-size: 1.1rem;">May all your secret wishes come true, my love! 🌟💖</span>`;
+            wishInstructions.innerHTML = `<span class="animate-fade-in" style="color: var(--color-gold); font-size: 1.1rem;">May all your secret wishes come true, my sweet Fatema! 🌟💖</span>`;
         }
         
         // Show "Open Gift" navigation control
@@ -893,63 +1143,99 @@ dots.forEach(dot => {
     });
 });
 
-let autoSlideInterval = setInterval(() => {
-    if (appState.currentPageIndex === 6) {
-        // Only auto slide if current card is not flipped
-        const currentCard = slideCards[appState.activeSlide];
-        if (currentCard && !currentCard.classList.contains('flipped')) {
-            showSlide(appState.activeSlide + 1);
-        }
-    }
-}, 5500);
+// Forward to Finale from Gallery
+const goToFinaleBtn = document.getElementById('goToFinaleBtn');
+if (goToFinaleBtn) {
+    goToFinaleBtn.addEventListener('click', () => {
+        playMagicChime();
+        navigateToPage(7);
+    });
+}
 
-const slideshowSection = document.getElementById('page6');
-slideshowSection.addEventListener('click', () => {
-    clearInterval(autoSlideInterval);
-    autoSlideInterval = setInterval(() => {
-        if (appState.currentPageIndex === 6) {
-            showSlide(appState.activeSlide + 1);
+// Finale Read Letter Again
+const finaleReadLetterBtn = document.getElementById('finaleReadLetterBtn');
+if (finaleReadLetterBtn) {
+    finaleReadLetterBtn.addEventListener('click', () => {
+        playMagicChime();
+        secretCard.classList.remove('hidden');
+    });
+}
+
+// Interactive Story Progress Stepper click navigation
+document.querySelectorAll('#storyProgressBar .progress-step').forEach(step => {
+    step.addEventListener('click', () => {
+        const targetStep = parseInt(step.getAttribute('data-step'));
+        if (targetStep && targetStep !== appState.currentPageIndex) {
+            if (!appState.quizPassed && targetStep > 1) {
+                openQuizGate();
+                return;
+            }
+            playMagicChime();
+            navigateToPage(targetStep);
         }
-    }, 5500);
+    });
 });
 
-// 7. Restart Button (Page 6 -> Page 2)
-const restartBtn = document.getElementById('restartBtn');
-restartBtn.addEventListener('click', () => {
-    playMagicChime();
-    
-    // Stop birthday song
-    stopBirthdaySong();
-    
-    // Reset candle state
-    flame.classList.remove('hidden');
-    smoke.classList.add('hidden');
-    wishInstructions.innerHTML = `<span class="pulse-text">Tap the flame to blow your wish into the stars! ✨</span>`;
-    cakeNavContainer.classList.add('hidden');
-    
-    // Reset gift state
-    giftBox.classList.remove('open');
-    secretCard.classList.remove('show');
-    secretCard.classList.add('hidden');
-    
-    // Reset balloon game state
-    balloonStartOverlay.classList.remove('fade-out');
-    wishDisplay.classList.remove('show');
-    wishDisplay.classList.add('hidden');
-    const spawnedBalloons = balloonField.querySelectorAll('.balloon');
-    spawnedBalloons.forEach(b => b.remove());
-    
-    // Reset slide index
-    showSlide(0);
+// Replay Surprise / Restart Button
+document.querySelectorAll('#restartBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        playMagicChime();
+        
+        // Stop birthday song
+        stopBirthdaySong();
+        
+        // Reset candle state
+        flame.classList.remove('hidden');
+        smoke.classList.add('hidden');
+        wishInstructions.innerHTML = `<span class="pulse-text">Tap the flame to blow your wish into the stars! ✨</span>`;
+        cakeNavContainer.classList.add('hidden');
+        
+        // Reset gift state
+        giftBox.classList.remove('open');
+        secretCard.classList.remove('show');
+        secretCard.classList.add('hidden');
+        
+        // Reset balloon game state
+        balloonStartOverlay.classList.remove('fade-out');
+        wishDisplay.classList.remove('show');
+        wishDisplay.classList.add('hidden');
+        const spawnedBalloons = balloonField.querySelectorAll('.balloon');
+        spawnedBalloons.forEach(b => b.remove());
+        
+        // Reset slide index
+        showSlide(0);
 
-    // Return to Page 2 (Greeting)
-    navigateToPage(2);
+        // Return to Page 1 for fresh journey
+        navigateToPage(1);
+    });
 });
 
-// 8. Sound System Controls (Mute / Unmute)
+// 8. Sound System Controls (MP3 Song & Soundscape)
+const bgMusic = document.getElementById('bgMusic');
 const musicToggle = document.getElementById('musicToggle');
 const iconPlaying = musicToggle.querySelector('.music-icon.playing');
 const iconMuted = musicToggle.querySelector('.music-icon.muted');
+
+function playBackgroundMusic() {
+    if (appState.isMusicMuted) return;
+    if (bgMusic) {
+        bgMusic.play().then(() => {
+            console.log("Playing Aarzu (Asim Azhar)");
+        }).catch(err => {
+            console.log("Audio notice:", err.message);
+            // Fallback to ambient soundscape if mp3 file is not loaded yet
+            startAmbientSoundscape();
+        });
+    } else {
+        startAmbientSoundscape();
+    }
+}
+
+function pauseBackgroundMusic() {
+    if (bgMusic) {
+        bgMusic.pause();
+    }
+}
 
 musicToggle.addEventListener('click', () => {
     appState.isMusicMuted = !appState.isMusicMuted;
@@ -957,14 +1243,16 @@ musicToggle.addEventListener('click', () => {
     if (appState.isMusicMuted) {
         iconPlaying.classList.add('hidden');
         iconMuted.classList.remove('hidden');
+        pauseBackgroundMusic();
         stopBirthdaySong();
     } else {
         iconPlaying.classList.remove('hidden');
         iconMuted.classList.add('hidden');
         getAudioContext();
+        playBackgroundMusic();
         
-        // Resume melody if candle was already blown out
-        if (flame.classList.contains('hidden') && !appState.birthdaySongPlaying) {
+        // Resume melody if candle was already blown out and no mp3
+        if (flame.classList.contains('hidden') && !appState.birthdaySongPlaying && (!bgMusic || bgMusic.paused)) {
             playHappyBirthdaySong();
         }
     }

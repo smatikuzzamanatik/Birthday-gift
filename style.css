@@ -813,11 +813,14 @@ body {
     z-index: 200;
     background: rgba(26, 10, 18, 0.97);
     backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    padding: 30px 20px;
+    justify-content: flex-start;
+    padding: 70px 16px 40px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     opacity: 0;
     transform: scale(0.95);
     transition: all 0.7s cubic-bezier(0.25, 1, 0.5, 1);
@@ -825,6 +828,13 @@ body {
     border-radius: 0;
     border: none;
     box-shadow: none;
+}
+
+@media (min-height: 780px) and (min-width: 681px) {
+    .revealed-card {
+        justify-content: center;
+        padding: 30px 20px;
+    }
 }
 
 .revealed-card.show {
@@ -854,17 +864,18 @@ body {
 .full-card-layout {
     display: flex;
     align-items: center;
-    gap: 40px;
-    max-width: 780px;
+    gap: 32px;
+    max-width: 920px;
     width: 100%;
 }
 
 .full-card-layout .card-photo-frame {
-    flex: 0 0 320px;
-    background: linear-gradient(145deg, #fff0f6, #ffe4ef);
-    padding: 10px 10px 30px 10px;
-    border-radius: 6px;
-    box-shadow: 0 10px 40px rgba(90, 5, 45, 0.55);
+    flex: 0 0 380px;
+    max-width: 400px;
+    background: #ffffff;
+    padding: 12px 12px 32px 12px;
+    border-radius: 8px;
+    box-shadow: 0 14px 40px rgba(0, 0, 0, 0.55), 0 0 25px rgba(244, 114, 182, 0.3);
     transform: rotate(-2deg);
     transition: transform 0.4s ease;
     margin-bottom: 0;
@@ -876,8 +887,27 @@ body {
 
 .full-card-layout .polaroid-photo {
     width: 100%;
-    aspect-ratio: 3/4;
+    aspect-ratio: 4/3;
     overflow: hidden;
+    border-radius: 4px;
+    background: #111;
+}
+
+.full-card-layout .polaroid-photo img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center center;
+    display: block;
+}
+
+.polaroid-handwritten-caption {
+    font-family: var(--font-handwritten);
+    font-size: 1.25rem;
+    color: #4a1525;
+    text-align: center;
+    margin-top: 10px;
+    font-weight: 700;
 }
 
 .card-text-side {
@@ -1353,29 +1383,463 @@ body {
 /* Responsive Breakpoints */
 @media (max-width: 768px) {
     .celebration-page {
-        padding: 60px 16px 40px;
+        padding: 65px 16px 45px;
         overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
 
     .birthday-name {
-        font-size: 3rem;
+        font-size: clamp(2rem, 7vw, 3.2rem);
+        word-break: break-word;
     }
 
     .welcome-title {
-        font-size: 2.2rem;
-    }
-
-    .prev { left: -10px; }
-    .next { right: -10px; }
-
-    .slide-arrow {
-        width: 36px;
-        height: 36px;
-        font-size: 0.95rem;
-        background: rgba(46, 14, 30, 0.95);
+        font-size: clamp(1.8rem, 6vw, 2.4rem);
     }
 
     .interactive-card {
+        padding: 28px 16px;
+    }
+}
+
+/* Floating Story Stepper Progress Bar */
+.story-progress-bar {
+    position: fixed;
+    top: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 150;
+    display: flex;
+    align-items: center;
+    background: rgba(26, 10, 18, 0.92);
+    border: 1px solid rgba(244, 114, 182, 0.35);
+    padding: 8px 18px;
+    border-radius: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 15px rgba(244, 114, 182, 0.2);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    gap: 8px;
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.story-progress-bar.hidden {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateX(-50%) translateY(-20px);
+}
+
+.progress-step {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    opacity: 0.4;
+    transition: all 0.3s ease;
+    padding: 5px 10px;
+    border-radius: 20px;
+    border: 1px solid transparent;
+}
+
+.progress-step:hover {
+    opacity: 0.8;
+}
+
+.progress-step.active {
+    opacity: 1;
+    background: rgba(244, 114, 182, 0.25);
+    border-color: rgba(244, 114, 182, 0.5);
+    box-shadow: 0 0 14px rgba(244, 114, 182, 0.4);
+}
+
+.progress-step.completed {
+    opacity: 0.85;
+}
+
+.progress-step .step-icon {
+    font-size: 1rem;
+}
+
+.progress-step .step-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+@media (max-width: 650px) {
+    .progress-step .step-label {
+        display: none;
+    }
+    .story-progress-bar {
+        padding: 5px 8px;
+        gap: 3px;
+        top: 10px;
+        max-width: 96vw;
+    }
+    .progress-step {
+        padding: 4px 6px;
+    }
+    .progress-step .step-icon {
+        font-size: 0.92rem;
+    }
+    .progress-line {
+        width: 6px !important;
+    }
+
+    /* Reposition Floating Music Toggle on Mobile to Bottom-Right to avoid header clash */
+    .music-control {
+        top: auto;
+        bottom: 20px;
+        right: 18px;
+        width: 46px;
+        height: 46px;
+        z-index: 1000;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 16px rgba(244, 114, 182, 0.4);
+    }
+}
+
+.progress-line {
+    width: 12px;
+    height: 2px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Slideshow Responsive on Mobile */
+@media (max-width: 500px) {
+    .slideshow-container {
+        height: 360px;
+        max-width: 100%;
+        margin-top: 10px;
+    }
+    .slide-arrow {
+        width: 32px;
+        height: 32px;
+        font-size: 0.85rem;
+        background: rgba(46, 14, 30, 0.95);
+    }
+    .prev { left: 4px; }
+    .next { right: 4px; }
+    .slide-caption {
+        font-size: 1.1rem;
+    }
+    .back-note-content {
+        font-size: 1.2rem;
+        line-height: 1.45;
+        margin: 10px 0;
+    }
+}
+
+/* Finale Page Styling */
+.finale-card {
+    text-align: center;
+    max-width: 740px;
+    padding: 45px 35px;
+}
+
+@media (max-width: 500px) {
+    .finale-card {
         padding: 30px 16px;
     }
 }
+
+.finale-crown {
+    font-size: 3.5rem;
+    margin-bottom: 12px;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.finale-title {
+    font-family: var(--font-serif);
+    font-size: clamp(1.6rem, 5vw, 2.3rem);
+    background: linear-gradient(135deg, var(--color-gold), #fff, var(--color-primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 12px 0 16px;
+}
+
+.finale-desc {
+    font-size: 1.1rem;
+    color: var(--color-text-bright);
+    line-height: 1.7;
+    margin-bottom: 25px;
+    font-style: italic;
+}
+
+.finale-promise-box {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 14px;
+    margin: 25px 0 35px;
+}
+
+@media (max-width: 480px) {
+    .finale-promise-box {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+}
+
+.promise-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(244, 114, 182, 0.2);
+    border-radius: 14px;
+    padding: 16px 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.promise-icon {
+    font-size: 1.6rem;
+}
+
+.promise-item p {
+    font-size: 0.95rem;
+    color: var(--color-secondary);
+    line-height: 1.4;
+}
+
+.finale-action-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+/* ========================================================
+   CUTE COUPLE QUIZ GATEWAY MODAL
+   ======================================================== */
+.quiz-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(13, 10, 18, 0.88);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    opacity: 1;
+    transition: opacity 0.4s ease, visibility 0.4s ease;
+}
+
+.quiz-modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.quiz-card {
+    max-width: 540px;
+    width: 100%;
+    max-height: 94vh;
+    overflow-y: auto;
+    margin: auto;
+    padding: 34px 28px;
+    border-radius: 24px;
+    border: 1px solid rgba(244, 114, 182, 0.35);
+    background: linear-gradient(135deg, rgba(46, 14, 30, 0.96), rgba(26, 10, 18, 0.98));
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7), 0 0 35px rgba(244, 114, 182, 0.3);
+    text-align: center;
+    position: relative;
+    animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@media (max-width: 480px) {
+    .quiz-card {
+        padding: 24px 16px;
+        border-radius: 20px;
+    }
+}
+
+.quiz-card.shake {
+    animation: quizShake 0.45s ease-in-out;
+}
+
+@keyframes quizShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-10px); }
+    40%, 80% { transform: translateX(10px); }
+}
+
+.quiz-badge {
+    display: inline-block;
+    background: rgba(244, 114, 182, 0.15);
+    border: 1px solid rgba(244, 114, 182, 0.4);
+    color: var(--color-primary-light);
+    font-size: 0.85rem;
+    font-weight: 700;
+    padding: 6px 16px;
+    border-radius: 30px;
+    margin-bottom: 12px;
+    letter-spacing: 0.5px;
+}
+
+.quiz-main-title {
+    font-family: var(--font-serif);
+    font-size: 1.85rem;
+    color: var(--color-gold);
+    margin-bottom: 6px;
+}
+
+.quiz-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.quiz-progress-track {
+    width: 100%;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 8px;
+}
+
+.quiz-progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-gold));
+    border-radius: 10px;
+    transition: width 0.4s ease;
+}
+
+.quiz-step-text {
+    font-size: 0.8rem;
+    color: var(--color-gold-light);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 22px;
+}
+
+.quiz-question-container {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 18px;
+    padding: 24px 20px;
+    position: relative;
+}
+
+.quiz-question-icon {
+    font-size: 2.5rem;
+    margin-bottom: 8px;
+    animation: bounce 2s infinite ease-in-out;
+}
+
+.quiz-question-text {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    color: #fff;
+    margin-bottom: 20px;
+    line-height: 1.45;
+    min-height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quiz-form {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+.quiz-input-wrapper {
+    position: relative;
+    width: 100%;
+}
+
+.quiz-input {
+    width: 100%;
+    padding: 14px 18px;
+    background: rgba(18, 8, 14, 0.8);
+    border: 2px solid rgba(244, 114, 182, 0.35);
+    border-radius: 14px;
+    color: #fff;
+    font-size: 1.05rem;
+    font-family: 'Outfit', sans-serif;
+    outline: none;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    text-align: center;
+}
+
+.quiz-input:focus {
+    border-color: var(--color-primary);
+    box-shadow: 0 0 16px rgba(244, 114, 182, 0.4);
+}
+
+.quiz-input::placeholder {
+    color: rgba(245, 198, 216, 0.4);
+    font-size: 0.95rem;
+}
+
+.quiz-submit-btn {
+    width: 100%;
+    padding: 13px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.quiz-feedback {
+    margin-top: 14px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    line-height: 1.4;
+    transition: all 0.3s ease;
+}
+
+.quiz-feedback.wrong {
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #fca5a5;
+    display: block;
+}
+
+.quiz-feedback.correct {
+    background: rgba(34, 197, 94, 0.15);
+    border: 1px solid rgba(34, 197, 94, 0.4);
+    color: #86efac;
+    display: block;
+}
+
+.quiz-hint-btn {
+    background: none;
+    border: none;
+    color: var(--color-rose-gold);
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 14px;
+    text-decoration: underline;
+    opacity: 0.75;
+    transition: opacity 0.2s;
+}
+
+.quiz-hint-btn:hover {
+    opacity: 1;
+}
+
+.quiz-hint-text {
+    font-size: 0.88rem;
+    color: var(--color-gold-light);
+    margin-top: 8px;
+    font-style: italic;
+    background: rgba(249, 197, 90, 0.1);
+    border-radius: 8px;
+    padding: 8px 12px;
+}
+
+
