@@ -1845,6 +1845,12 @@ body {
 /* ========================================================
    HIDE POWERED BY NETLIFY BADGE / HUD
    ======================================================== */
+#nl-badge,
+.nl-badge,
+button#nl-badge,
+button.nl-badge,
+[id*="nl-badge"],
+[class*="nl-badge"],
 netlify-hud,
 netlify-badge,
 [data-netlify-hud],
@@ -1864,9 +1870,11 @@ div[class*="netlify"] {
     pointer-events: none !important;
     width: 0 !important;
     height: 0 !important;
-    position: absolute !important;
-    left: -9999px !important;
-    z-index: -9999 !important;
+    position: fixed !important;
+    left: -99999px !important;
+    top: -99999px !important;
+    transform: scale(0) !important;
+    z-index: -99999 !important;
 }
 
 

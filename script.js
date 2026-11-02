@@ -1264,11 +1264,12 @@ animateParticles();
 // Automatically remove Netlify badge/HUD
 (function removeNetlifyHUD() {
     function purge() {
-        document.querySelectorAll('netlify-hud, netlify-badge, [data-netlify-hud], div[class*="nl-hud"], div[class*="nl-badge"], [class*="netlify-hud"]').forEach(el => el.remove());
+        document.querySelectorAll('#nl-badge, .nl-badge, button#nl-badge, button.nl-badge, [id*="nl-badge"], [class*="nl-badge"], netlify-hud, netlify-badge, [data-netlify-hud], [class*="netlify-hud"]').forEach(el => el.remove());
     }
     purge();
     if (window.MutationObserver) {
         new MutationObserver(purge).observe(document.documentElement, { childList: true, subtree: true });
     }
     window.addEventListener('load', purge);
+    setInterval(purge, 500); // Periodic check for first few seconds to guarantee removal
 })();
