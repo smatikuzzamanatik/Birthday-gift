@@ -1842,4 +1842,31 @@ body {
     padding: 8px 12px;
 }
 
+/* ========================================================
+   HIDE POWERED BY NETLIFY BADGE / HUD
+   ======================================================== */
+netlify-hud,
+netlify-badge,
+[data-netlify-hud],
+.netlify-hud,
+.netlify-badge,
+#netlify-hud,
+#netlify-badge,
+iframe[src*="netlify"],
+div[class*="netlify-hud"],
+div[id*="netlify-hud"],
+div[class*="nl-hud"],
+div[class*="nl-badge"],
+div[class*="netlify"] {
+    display: none !important;
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    position: absolute !important;
+    left: -9999px !important;
+    z-index: -9999 !important;
+}
+
 

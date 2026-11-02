@@ -1260,3 +1260,15 @@ musicToggle.addEventListener('click', () => {
 
 // Start background animations
 animateParticles();
+
+// Automatically remove Netlify badge/HUD
+(function removeNetlifyHUD() {
+    function purge() {
+        document.querySelectorAll('netlify-hud, netlify-badge, [data-netlify-hud], div[class*="nl-hud"], div[class*="nl-badge"], [class*="netlify-hud"]').forEach(el => el.remove());
+    }
+    purge();
+    if (window.MutationObserver) {
+        new MutationObserver(purge).observe(document.documentElement, { childList: true, subtree: true });
+    }
+    window.addEventListener('load', purge);
+})();
